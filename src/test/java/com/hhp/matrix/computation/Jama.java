@@ -20,12 +20,26 @@ public class Jama {
 	private static String print(Matrix m) {
 		StringBuilder sb = new StringBuilder();
 		double[][] array = m.getArray();
+		sb.append("<<<<<<<rows:" + array.length + ", cols:" + array[0].length + "\n");
 		for (double[] ds : array) {
 			for (double d : ds) {
-				sb.append(d).append(" ");
+				sb.append(fixedWidthDoubletoString(d, 12, 5)).append(" ");
 			}
 			sb.append("\n");
 		}
+		sb.append(">>>>>>>rows:" + array.length + ", cols:" + array[0].length + "\n");
 		return sb.toString();
+	}
+
+	private static String fixedWidthDoubletoString(double x, int w, int d) {
+		java.text.DecimalFormat fmt = new java.text.DecimalFormat();
+		fmt.setMaximumFractionDigits(d);
+		fmt.setMinimumFractionDigits(d);
+		fmt.setGroupingUsed(false);
+		String s = fmt.format(x);
+		while (s.length() < w) {
+			s = " " + s;
+		}
+		return s;
 	}
 }
