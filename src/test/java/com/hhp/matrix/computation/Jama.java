@@ -4,7 +4,7 @@ import Jama.Matrix;
 
 public class Jama {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		Matrix A = new Matrix(new double[][] { { 1, 2 }, { 3, 4 } });
 		System.out.println("A\n" + print(A));
 		Matrix B = new Matrix(new double[][] { { 2, 2 }, { 2, 2 } });
@@ -17,15 +17,15 @@ public class Jama {
 		System.out.println("A/B\n" + print(A.arrayRightDivide(B)));
 		
 		//------printing matrix subset
-		double[][] d = new double[10][10];
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
+		int size = 100;
+		double[][] d = new double[size][size];
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
 				d[i][j] = Math.random();
 			}
 		}
 		Matrix m = new Matrix(d);
-		System.out.println("m\n" + print(m));
-		System.out.println("m\n" + print(m, 4, 2));
+		System.out.println("m\n" + printSubSet_For0BasedIndex(m, 50, 8, 40, 8));
 	}
 	//------------
 		private static String print(Matrix m) {
@@ -42,19 +42,32 @@ public class Jama {
 			return sb.toString();
 		}
 		//------------
-		private static String print(Matrix m, int rowPrintLength, int columnPrintLength) {
+		private static String printSubSet_For0BasedIndex(
+				Matrix m, int rowStartIndex, int noOfRows, int columnStartIndex, int noOfColumns) throws Exception {
+			//
+			int rows = m.getArray().length;
+			int cols = m.getArray()[0].length;
+			if (rowStartIndex < 0 || noOfRows < 0 || columnStartIndex < 0 || noOfColumns < 0
+					|| rowStartIndex + 1 > rows || rowStartIndex + 1 + noOfRows > rows 
+					|| columnStartIndex + 1 > cols || rowStartIndex + 1 + noOfColumns > cols) {
+				throw new Exception("Invalid matrix parameters..matrix["+rows+" X " + cols + "], rowStartIndex["+rowStartIndex+"], "
+						+ "noOfRows["+noOfRows+"], columnStartIndex["+columnStartIndex+"], noOfColumns["+noOfColumns+"]");
+			}
+			//
 			StringBuilder sb = new StringBuilder();
-			int rows = (m.getArray().length < rowPrintLength) ? m.getArray().length : rowPrintLength;
-			int cols = (m.getArray()[0].length < columnPrintLength) ? m.getArray()[0].length : columnPrintLength;
-			sb.append("<<<<<<<rows:" + m.getArray().length + ", cols:" + m.getArray()[0].length + " printing " + rows + " X " + cols + "\n");
-			for (int i = 0; i < rows; i++) {
-				for (int j = 0; j < cols; j++) {
+			int rowEndIndex = rowStartIndex + noOfRows - 1;
+			int columnEndIndex = columnStartIndex + noOfColumns - 1;
+			sb.append("<<<<<<<rows:" + rows + ", cols:" + cols + " printing [" + rowStartIndex + "-" + rowEndIndex
+				+ " X " + columnStartIndex + "-" + columnEndIndex + "]\n");
+			for (int i = rowStartIndex; i <= rowEndIndex; i++) {
+				for (int j = columnStartIndex; j <= columnEndIndex; j++) {
 					double d = m.get(i, j);
 					sb.append(fixedWidthDoubletoString(d, 12, 5)).append(" ");
 				}
 				sb.append("\n");
 			}
-			sb.append(">>>>>>>rows:" + m.getArray().length + ", cols:" + m.getArray()[0].length + " printing " + rows + " X " + cols + "\n");
+			sb.append(">>>>>>>rows:" + rows + ", cols:" + cols + " printing [" + rowStartIndex + "-" + rowEndIndex
+					+ " X " + columnStartIndex + "-" + columnEndIndex + "]\n");
 			return sb.toString();
 		}
 		//------------	
